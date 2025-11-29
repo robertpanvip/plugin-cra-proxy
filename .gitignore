@@ -1,6 +1,8 @@
-/packages/react/node_modules/
-/packages/react-dom/node_modules/
-/packages/adapter/node_modules/
-/vue-test/node_modules/
+/packages/rsbuild/node_modules/
+/packages/rsbuild/dist/
+/packages/vite/node_modules/
+/packages/vite/dist/
+/packages/core/node_modules/
+/packages/core/dist/
 /node_modules/
 .idea/

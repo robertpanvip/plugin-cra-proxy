@@ -1,6 +1,6 @@
 {
   "name": "@plugin-cra-proxy/vite",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": "https://github.com/robertpanvip/plugin-proxy.git",
   "license": "MIT",
   "type": "module",

@@ -1,59 +1,21 @@
 {
-  "name": "rsbuild-plugin-cra-proxy",
-  "version": "0.0.1",
-  "repository": "https://github.com/rspack-contrib/rsbuild-plugin-template",
-  "license": "MIT",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
+  "name": "plugin-cra-proxy",
+  "version": "1.0.0",
+  "description": "plugin-proxy",
+  "workspaces": [
+    "./packages/*"
   ],
-  "scripts": {
-    "build": "rslib build",
-    "dev": "rslib build --watch",
-    "lint": "biome check .",
-    "lint:write": "biome check . --write",
-    "prepare": "simple-git-hooks && npm run build",
-    "test": "playwright test",
-    "bump": "npx bumpp"
+  "homepage": "https://github.com/robertpanvip/plugin-cra-proxy.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robertpanvip/plugin-cra-proxy.git"
   },
-  "simple-git-hooks": {
-    "pre-commit": "npm run lint:write"
+  "bugs": {
+    "url": "https://github.com/robertpanvip/plugin-cra-proxy/issues"
   },
-  "devDependencies": {
-    "@biomejs/biome": "^2.3.2",
-    "@playwright/test": "^1.56.1",
-    "@rsbuild/core": "^1.6.0",
-    "@rslib/core": "^0.17.0",
-    "@types/node": "^24.9.2",
-    "playwright": "^1.56.1",
-    "simple-git-hooks": "^2.13.1",
-    "typescript": "^5.9.3"
-  },
-  "peerDependencies": {
-    "@rsbuild/core": "1.x"
-  },
-  "peerDependenciesMeta": {
-    "@rsbuild/core": {
-      "optional": true
-    }
-  },
-  "packageManager": "pnpm@10.20.0",
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
+  "author": "pan",
+  "license": "ISC",
   "dependencies": {
-    "address": "^2.0.3",
-    "http-proxy-middleware": "^3.0.5"
+    "supports-color": "^10.2.2"
   }
 }

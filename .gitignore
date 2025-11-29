@@ -1,15 +1,6 @@
-# Local
-.DS_Store
-*.local
-*.log*
-
-# Dist
-node_modules
-dist/
-test-results
-
-# IDE
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-.idea
+/packages/react/node_modules/
+/packages/react-dom/node_modules/
+/packages/adapter/node_modules/
+/vue-test/node_modules/
+/node_modules/
+.idea/

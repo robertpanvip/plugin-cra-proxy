@@ -3,7 +3,4 @@ import { pluginCraProxy } from '../src';
 
 export default defineConfig({
   plugins: [pluginCraProxy()],
-  server: {
-    proxy: {},
-  },
 });

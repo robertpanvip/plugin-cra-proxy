@@ -1,20 +1,27 @@
 import {
-  pluginCraProxy as craProxyCore,
-  type PluginCraProxyOptions,
-} from '@plugin-cra-proxy/core';
-import type { RsbuildPlugin } from '@rsbuild/core';
+	pluginCraProxy as craProxyCore,
+	type PluginCraProxyOptions,
+} from "@plugin-cra-proxy/core";
+import type { RsbuildPlugin } from "@rsbuild/core";
 
 export const pluginCraProxy = (
-  options?: PluginCraProxyOptions,
+	options?: PluginCraProxyOptions,
 ): RsbuildPlugin => ({
-  name: 'plugin-cra-proxy',
+	name: "plugin-cra-proxy",
+	apply: "serve",
+	enforce: "post",
 
-  setup(api) {
-    craProxyCore(options).setup({
-      ...api,
-      modifyConfig: api.modifyRsbuildConfig,
-    });
-  },
+	setup(api) {
+		api.modifyRsbuildConfig((config) => {
+			config.server = config.server ?? {};
+			config.server.htmlFallback = false;
+			config.dev = config.dev ?? {};
+		});
+		craProxyCore(options).setup({
+			...api,
+			modifyConfig: api.modifyRsbuildConfig,
+		});
+	},
 });
 
 export default pluginCraProxy;

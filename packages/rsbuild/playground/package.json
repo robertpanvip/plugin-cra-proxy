@@ -6,5 +6,5 @@
     "dev": "npx rsbuild dev",
     "build": "npx rsbuild build"
   },
-  "proxy": "http://172.0.0.1"
+  "proxy": "http://127.0.0.1:4000"
 }

@@ -4,5 +4,6 @@
 /packages/vite/dist/
 /packages/core/node_modules/
 /packages/core/dist/
+/packages/vite/playground/node_modules/
 /node_modules/
 .idea/

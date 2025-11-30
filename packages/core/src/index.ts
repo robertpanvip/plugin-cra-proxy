@@ -1,10 +1,10 @@
 import fs from 'node:fs';
+import type {IncomingMessage} from "node:http";
 import {Socket} from 'node:net';
 import path from 'node:path';
 import url from 'node:url';
 import * as address from 'address';
 import {createProxyMiddleware} from 'http-proxy-middleware';
-import {IncomingMessage} from "node:http";
 
 // biome-ignore lint/complexity/noBannedTypes: {}
 export type PluginCraProxyOptions = {};
@@ -120,7 +120,7 @@ export const pluginCraProxy = (_?: PluginCraProxyOptions): Plugin => ({
 
             // ✨ 使用 config.dev.setupMiddlewares
             config.dev ??= {};
-            const userSetup = config.dev!.setupMiddlewares;
+            const userSetup = config.dev?.setupMiddlewares;
 
             config.dev.setupMiddlewares = (middlewares, devServer) => {
                 // 调回用户原有的（如果有）

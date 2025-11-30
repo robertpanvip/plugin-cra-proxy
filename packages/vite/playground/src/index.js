@@ -8,5 +8,5 @@ document.querySelector('#app').innerHTML = `
 `;
 
 setTimeout(() => {
-  fetch('/a');
+  fetch('/api/hellox');
 }, 1000);

@@ -31,7 +31,7 @@ type ServerSetupContext = {
      */
     server: RsbuildPreviewServer;
 });
-
+const isVersion1 = version.startsWith("1.")
 export const pluginCraProxy = (
     options?: PluginCraProxyOptions,
 ): RsbuildPlugin => ({
@@ -46,7 +46,10 @@ export const pluginCraProxy = (
         const tempConfig: HookConfig = {};
 
         // 先让 core 包执行，把它想写的 setupMiddlewares 写到 tempConfig 中
-        craProxyCore(options).setup({
+        craProxyCore(options).setup(isVersion1 ? {
+            ...api,
+            modifyConfig: api.modifyRsbuildConfig,
+        } : {
             ...api,
             getNormalizedConfig: () => tempConfig,
             modifyConfig: (fn) => fn(tempConfig),
@@ -73,19 +76,18 @@ export const pluginCraProxy = (
             config.server = config.server ?? {};
             config.server.htmlFallback = false;
             config.dev = config.dev ?? {};
+            if (!isVersion1) {
+                const userSetup = config.server.setup;
 
-            const userSetup = config.server.setup;
-
-            // 我们的 proxy setup 函数
-            const proxySetup = (context: ServerSetupContext) => {
-                // 返回回调，在默认中间件注册后执行
-                return () => {
-                    proxyMiddlewares.forEach((mw) => {
-                        context.server.middlewares.use(mw);
-                    });
+                // 我们的 proxy setup 函数
+                const proxySetup = (context: ServerSetupContext) => {
+                    // 返回回调，在默认中间件注册后执行
+                    return () => {
+                        proxyMiddlewares.forEach((mw) => {
+                            context.server.middlewares.use(mw);
+                        });
+                    };
                 };
-            };
-            if (!version.startsWith("1.")) {
                 // 组合用户配置和我们的配置
                 if (Array.isArray(userSetup)) {
                     config.server.setup = [...userSetup, proxySetup];
@@ -97,12 +99,6 @@ export const pluginCraProxy = (
             }
         });
 
-        if (version.startsWith("1.")) {
-            craProxyCore(options).setup({
-                ...api,
-                modifyConfig: api.modifyRsbuildConfig,
-            });
-        }
     },
 });
 

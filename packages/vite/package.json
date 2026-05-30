@@ -42,6 +42,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@plugin-cra-proxy/core": "latest"
+    "@plugin-cra-proxy/core": "^1.0.0"
   }
 }

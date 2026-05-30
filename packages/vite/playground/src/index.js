@@ -1,4 +1,4 @@
-import './index.css';
+import './index.css?a=123';
 
 document.querySelector('#app').innerHTML = `
 <div class="content">
@@ -8,5 +8,5 @@ document.querySelector('#app').innerHTML = `
 `;
 
 setTimeout(() => {
-  fetch('/api/hellox');
+  fetch('/api/user');
 }, 1000);

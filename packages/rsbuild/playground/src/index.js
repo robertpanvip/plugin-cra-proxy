@@ -6,4 +6,4 @@ document.querySelector('#root').innerHTML = `
   <p>Start building amazing things with Rsbuild.</p>
 </div>
 `;
-fetch('/api/hellox')
+fetch('/api/user')

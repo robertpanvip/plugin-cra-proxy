@@ -1,6 +1,6 @@
 {
   "name": "@plugin-cra-proxy/rsbuild",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "repository": "https://github.com/robertpanvip/plugin-proxy.git",
   "license": "MIT",
   "type": "module",
@@ -45,6 +45,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@plugin-cra-proxy/core": "^1.0.0"
+    "@plugin-cra-proxy/core": "latest"
   }
 }

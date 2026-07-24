@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Detect Changed Packages
+        id: changed
+        run: |
+          if [ $(git rev-list --count HEAD) -eq 1 ]; then
+            CHANGED=$(ls packages/ | tr '\n' ' ')
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E '^packages/([^/]+)' | sed 's|packages/||' | cut -d'/' -f1 | sort -u | tr '\n' ' ')
+          fi
+          CHANGED=$(echo "$CHANGED" | sed 's/ *$//')
+          echo "changed_packages=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed packages: $CHANGED"
+
+      - name: Build Changed Packages
+        if: steps.changed.outputs.changed_packages != ''
+        run: |
+          for pkg in ${{ steps.changed.outputs.changed_packages }}; do
+            echo "Building package: $pkg"
+            pnpm --filter ./packages/$pkg build
+          done
+
+      - name: Publish Changed Packages
+        if: steps.changed.outputs.changed_packages != ''
+        run: |
+          for pkg in ${{ steps.changed.outputs.changed_packages }}; do
+            echo "Publishing package: $pkg"
+            cd packages/$pkg
+            pkg_name=$(node -p "require('./package.json').name")
+            local_version=$(node -p "require('./package.json').version")
+            npm_latest=$(npm view "$pkg_name" version 2>/dev/null || echo "0.0.0")
+            target=$(node -e "
+              const lv = '$local_version'.split('.').map(Number);
+              const nv = '$npm_latest'.split('.').map(Number);
+              const major = Math.max(lv[0], nv[0]);
+              const minor = Math.max(lv[1], nv[1]);
+              const patch = Math.max(lv[2], nv[2]) + 1;
+              console.log(major + '.' + minor + '.' + patch);
+            ")
+            echo "$pkg_name: local=$local_version, npm=$npm_latest, target=$target"
+            # Use Node.js to update version directly, avoiding npm version bugs
+            node -e "
+              const fs = require('fs');
+              const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+              pkg.version = '$target';
+              fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+            "
+            npm publish --access public --registry https://registry.npmjs.org/
+            cd ../..
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Commit and Push Version Changes
+        if: steps.changed.outputs.changed_packages != ''
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add packages/*/package.json
+          git commit -m "chore: bump package versions" || echo "No changes to commit"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:${GITHUB_REF_NAME}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Skip - No Changes
+        if: steps.changed.outputs.changed_packages == ''
+        run: echo "No package changes detected, skipping release"

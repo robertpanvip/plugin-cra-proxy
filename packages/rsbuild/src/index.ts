@@ -22,7 +22,14 @@ type ServerSetupContext = {
 
 const isVersion1 = version.startsWith("1.");
 
-export const pluginCraProxy = (): RsbuildPlugin => ({
+export type PluginCraProxyOptions = {
+	/**
+	 * 代理目标地址。优先级高于 package.json 中的 "proxy" 字段。
+	 */
+	proxy?: string;
+};
+
+export const pluginCraProxy = (options: PluginCraProxyOptions = {}): RsbuildPlugin => ({
 	name: "plugin-cra-proxy",
 	apply: "serve",
 	enforce: "post",
@@ -34,6 +41,7 @@ export const pluginCraProxy = (): RsbuildPlugin => ({
 			config.server.htmlFallback = false;
 			config.dev = config.dev ?? {};
 			const mw = createMiddleware({
+				proxy: options.proxy,
 				get hmr(){
 					return api.getNormalizedConfig().dev?.client?.path
 				},

@@ -54,13 +54,20 @@ const isViteAsset = (req: Connect.IncomingMessage, url: string) => {
 };
 const cache = new Map();
 
+export type PluginCraProxyOptions = {
+  /**
+   * 代理目标地址。优先级高于 package.json 中的 "proxy" 字段。
+   */
+  proxy?: string;
+};
+
 /**
  * Vite 插件：完美复刻 Create React App 的 package.json "proxy" 功能
  * 使用方式和 CRA 完全一致，只需要在 package.json 中写一行：
  *   "proxy": "http://localhost:5000"
- * 无需任何 vite.config.ts 配置
+ * 也可以通过插件参数传入 proxy，优先级高于 package.json。
  */
-export const pluginCraProxy = (): Plugin => ({
+export const pluginCraProxy = (config: PluginCraProxyOptions = {}): Plugin => ({
   name: "plugin-cra-proxy",
   enforce: "post", // 放在最后执行，确保其他插件（如 rsbuild/vite 自己的配置）已经完成
   apply: "serve", // // 只在开发服务器时生效
@@ -75,6 +82,7 @@ export const pluginCraProxy = (): Plugin => ({
     const base = server.config.base || "/";
 
     const mw = createMiddleware({
+      proxy: config.proxy,
       hmr,
       logger: {
         start: server.config.logger.info,

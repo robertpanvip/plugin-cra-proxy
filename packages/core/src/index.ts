@@ -8,6 +8,10 @@ import {createProxyMiddleware, type RequestHandler} from "http-proxy-middleware"
 
 export type PluginCoreCraProxyOptions = {
 	hmr?: string;
+	/**
+	 * 代理目标地址。优先级高于 package.json 中的 "proxy" 字段。
+	 */
+	proxy?: string;
 	logger: {
 		start: (message: string) => void;
 		error: (message: string) => void;
@@ -41,13 +45,17 @@ function isWebSocketRequest(req: IncomingMessage) {
 export const createMiddleware = (
 	api: PluginCoreCraProxyOptions,
 ): RequestHandler | undefined => {
-	const pkgPath = resolveApp("package.json");
-	const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-	const proxy = pkg.proxy;
+	// 优先使用配置传入的 proxy，其次读取 package.json 中的 "proxy" 字段
+	let proxy = api.proxy;
+	if (!proxy) {
+		const pkgPath = resolveApp("package.json");
+		const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+		proxy = pkg.proxy;
+	}
 
 	if (!proxy) return;
 	if (typeof proxy !== "string") {
-		api.logger.error(`"proxy" in package.json must be a string`);
+		api.logger.error(`"proxy" must be a string`);
 		process.exit(1);
 	}
 

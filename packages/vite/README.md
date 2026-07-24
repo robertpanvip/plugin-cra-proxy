@@ -35,7 +35,12 @@ export default {
   plugins: [pluginCraProxy()],
 };
 ```
-
+***package.json***:
+```json
+{
+  "proxy": "http://localhost:4000"
+}
+```
 ## Options
 
 ## License

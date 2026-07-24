@@ -4,7 +4,10 @@ import { Socket } from "node:net";
 import path from "node:path";
 import url from "node:url";
 import * as address from "address";
-import {createProxyMiddleware, type RequestHandler} from "http-proxy-middleware";
+import {
+	createProxyMiddleware,
+	type RequestHandler,
+} from "http-proxy-middleware";
 
 export type PluginCoreCraProxyOptions = {
 	hmr?: string;

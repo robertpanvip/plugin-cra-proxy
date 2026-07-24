@@ -33,7 +33,9 @@ export const pluginCraProxy = (
 	options: PluginCraProxyOptions = {},
 ): RsbuildPlugin => ({
 	name: "plugin-cra-proxy",
+
 	apply: "serve",
+
 	enforce: "post",
 
 	setup(api) {

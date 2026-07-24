@@ -1,6 +1,6 @@
 import { createMiddleware } from "@plugin-cra-proxy/core";
 import type { RequestHandler } from "http-proxy-middleware";
-import { type Connect, type Plugin } from "vite";
+import type { Connect, Plugin } from "vite";
 
 const timestampRE = /\bt=\d{13}&?\b/;
 const trailingSeparatorRE = /[?&]$/;

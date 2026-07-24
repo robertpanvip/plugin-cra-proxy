@@ -29,7 +29,9 @@ export type PluginCraProxyOptions = {
 	proxy?: string;
 };
 
-export const pluginCraProxy = (options: PluginCraProxyOptions = {}): RsbuildPlugin => ({
+export const pluginCraProxy = (
+	options: PluginCraProxyOptions = {},
+): RsbuildPlugin => ({
 	name: "plugin-cra-proxy",
 	apply: "serve",
 	enforce: "post",
@@ -42,8 +44,8 @@ export const pluginCraProxy = (options: PluginCraProxyOptions = {}): RsbuildPlug
 			config.dev = config.dev ?? {};
 			const mw = createMiddleware({
 				proxy: options.proxy,
-				get hmr(){
-					return api.getNormalizedConfig().dev?.client?.path
+				get hmr() {
+					return api.getNormalizedConfig().dev?.client?.path;
 				},
 				logger: api.logger,
 			});

@@ -73,9 +73,9 @@ export const pluginCraProxy = (config: PluginCraProxyOptions = {}): Plugin => ({
   apply: "serve", // // 只在开发服务器时生效
   configureServer(server) {
     let hmr = "/";
-    if ("object" == typeof server.config.server.ws) {
+    if ("object" === typeof server.config.server.ws) {
       hmr = server.config.server.ws?.path ?? "/";
-    } else if ("object" == typeof server.config.server.hmr) {
+    } else if ("object" === typeof server.config.server.hmr) {
       hmr = server.config.server.hmr?.path ?? "/";
     }
 

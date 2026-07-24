@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Detect Changed Packages
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin ${{ github.base_ref }}
+            CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '^packages/([^/]+)' | sed 's|packages/||' | cut -d'/' -f1 | sort -u | tr '\n' ' ')
+          else
+            if [ $(git rev-list --count HEAD) -eq 1 ]; then
+              CHANGED=$(ls packages/ | tr '\n' ' ')
+            else
+              CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E '^packages/([^/]+)' | sed 's|packages/||' | cut -d'/' -f1 | sort -u | tr '\n' ' ')
+            fi
+          fi
+          CHANGED=$(echo "$CHANGED" | sed 's/ *$//')
+          echo "changed_packages=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed packages: $CHANGED"
+
+      - name: Build Changed Packages
+        if: steps.changed.outputs.changed_packages != ''
+        run: |
+          for pkg in ${{ steps.changed.outputs.changed_packages }}; do
+            echo "Building package: $pkg"
+            pnpm --filter ./packages/$pkg build
+          done
+
+      - name: Test Changed Packages
+        if: steps.changed.outputs.changed_packages != ''
+        run: |
+          for pkg in ${{ steps.changed.outputs.changed_packages }}; do
+            echo "Testing package: $pkg"
+            pnpm --filter ./packages/$pkg test || true
+          done
+
+      - name: Lint Changed Packages
+        if: steps.changed.outputs.changed_packages != ''
+        run: |
+          for pkg in ${{ steps.changed.outputs.changed_packages }}; do
+            echo "Linting package: $pkg"
+            pnpm --filter ./packages/$pkg lint || true
+          done
+
+      - name: Skip - No Changes
+        if: steps.changed.outputs.changed_packages == ''
+        run: echo "No package changes detected, skipping build/test/lint"

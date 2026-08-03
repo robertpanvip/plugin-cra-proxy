@@ -1,6 +1,6 @@
 {
   "name": "@plugin-cra-proxy/vite",
-  "keywords": ["vite-plugin","cra","proxy"]
+  "keywords": ["vite-plugin","cra","proxy"],
   "version": "1.0.2",
   "repository": "https://github.com/robertpanvip/plugin-proxy.git",
   "license": "MIT",
